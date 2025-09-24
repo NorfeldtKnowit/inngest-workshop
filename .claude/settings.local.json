@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_navigate",
+      "Bash(lsof:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(grep:*)",
+      "Bash(npx playwright:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:www.inngest.com)"
+    ],
+    "deny": []
+  },
+  "enabledMcpjsonServers": [
+    "playwright"
+  ]
+}
