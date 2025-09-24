@@ -1,26 +1,38 @@
 {
-  "name": "fastfood-workshop",
-  "version": "0.1.0",
+  "name": "inngest-workshop",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "concurrently --names \"NEXT,INNGEST,DB\" --prefix-colors \"blue,green,yellow\" \"next dev\" \"npm run inngest:dev\" \"npm run db:studio\"",
+    "dev:next": "next dev",
+    "inngest:dev": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "setup": "npm install && npm run db:push",
     "audit": "npm audit --audit-level=moderate",
     "audit:fix": "npm audit fix",
     "preinstall": "npm audit --audit-level=moderate || true"
   },
   "dependencies": {
+    "@radix-ui/react-progress": "1.1.7",
+    "@radix-ui/react-separator": "1.1.7",
+    "@radix-ui/react-slot": "1.2.3",
     "@tanstack/react-query": "5.89.0",
     "better-sqlite3": "12.2.0",
+    "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.44.5",
     "inngest": "3.40.3",
+    "lucide-react": "0.544.0",
     "next": "15.5.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "tailwind-merge": "3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
@@ -34,6 +46,7 @@
     "eslint": "9.35.0",
     "eslint-config-next": "15.5.3",
     "tailwindcss": "4.1.13",
+    "tw-animate-css": "1.3.8",
     "typescript": "5.9.2"
   }
 }
