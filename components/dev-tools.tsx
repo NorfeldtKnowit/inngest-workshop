@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import type { FC } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Toast = {
   id: number;
@@ -51,6 +51,7 @@ export const DevTools: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [counts, setCounts] = useState<{ orders: number; orderItems: number; foodWarmer: number; wasteLog: number; activePreparations: number } | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Keyboard shortcut
   useEffect(() => {
@@ -62,6 +63,20 @@ export const DevTools: FC = () => {
     };
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
+  }, [isOpen]);
+
+  // Click outside to close
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (e: MouseEvent): void => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
   // Fetch current counts
@@ -436,7 +451,7 @@ export const DevTools: FC = () => {
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <div className="fixed bottom-0 right-4 w-[350px] bg-amber-50 border-2 border-amber-800 shadow-[8px_8px_0px_rgba(120,53,15,0.4)] z-50 flex flex-col">
+      <div ref={panelRef} className="fixed bottom-0 right-4 w-[350px] bg-amber-50 border-2 border-amber-800 shadow-[8px_8px_0px_rgba(120,53,15,0.4)] z-50 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b-2 border-amber-800 bg-amber-100">
         <h2 className="text-lg font-bold text-amber-900 uppercase">🛠️ FastFood Dev Tools</h2>
