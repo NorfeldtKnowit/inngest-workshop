@@ -466,20 +466,6 @@ export const DevTools: FC = () => {
 
       {/* Content */}
       <div className="p-4 space-y-4">
-        {/* Current Counts */}
-        {counts && (
-          <div className="p-3 bg-amber-100 border-2 border-amber-800">
-            <h3 className="font-bold mb-3 text-sm text-amber-900 uppercase bg-amber-50 px-3 py-1 border border-amber-900 inline-block w-fit">📊 Current Status</h3>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="flex justify-between items-center font-medium">Orders: <span className="bg-amber-800 text-amber-50 min-w-[2rem] text-center px-2 py-1 font-bold border-2 border-amber-900">{counts.orders}</span></div>
-              <div className="flex justify-between items-center font-medium">Order Items: <span className="bg-amber-800 text-amber-50 min-w-[2rem] text-center px-2 py-1 font-bold border-2 border-amber-900">{counts.orderItems}</span></div>
-              <div className="flex justify-between items-center font-medium">Food Warmer: <span className="bg-amber-800 text-amber-50 min-w-[2rem] text-center px-2 py-1 font-bold border-2 border-amber-900">{counts.foodWarmer}</span></div>
-              <div className="flex justify-between items-center font-medium">Waste Log: <span className="bg-amber-800 text-amber-50 min-w-[2rem] text-center px-2 py-1 font-bold border-2 border-amber-900">{counts.wasteLog}</span></div>
-              <div className="flex justify-between items-center font-medium">Active Preps: <span className="bg-amber-800 text-amber-50 min-w-[2rem] text-center px-2 py-1 font-bold border-2 border-amber-900">{counts.activePreparations}</span></div>
-            </div>
-          </div>
-        )}
-
         {/* Order Queue */}
         <div className="space-y-2">
           <h3 className="font-bold text-sm flex items-center text-green-900 uppercase bg-green-100 px-3 py-1 border border-green-900 inline-block w-fit mb-3">
