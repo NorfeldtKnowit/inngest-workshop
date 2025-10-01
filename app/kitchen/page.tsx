@@ -105,7 +105,7 @@ export default function KitchenDashboard() {
       />
 
       {/* Header */}
-      <div className="relative z-10 border-b-4 border-yellow-900 bg-yellow-100 shadow-[0px_4px_0px_rgba(113,63,18,0.8)]">
+      <div className="sticky top-2 z-20 border-2 border-b-4 border-yellow-800 bg-yellow-100 shadow-[4px_4px_0px_rgba(113,63,18,0.8)] mx-6 mt-2">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
