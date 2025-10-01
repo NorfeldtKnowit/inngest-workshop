@@ -1,6 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { FOOD_EMOJIS } from '@/lib/constants';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ type FoodWarmerItem = FastFood['FoodWarmerItem'];
 type ActivePreparation = FastFood['ActivePreparation'];
 
 export default function KitchenDashboard() {
+  const queryClient = useQueryClient();
   // Fetch orders
   const { data: orders = [] } = useQuery({
     queryKey: ['orders'],
@@ -47,6 +49,24 @@ export default function KitchenDashboard() {
     },
     refetchInterval: 5000,
   });
+
+  // Throttled invalidation when warmer state changes
+  const lastInvalidationRef = useRef<number>(0);
+  const warmerCountRef = useRef<number>(warmerItems.length);
+
+  useEffect(() => {
+    const now = Date.now();
+    const timeSinceLastInvalidation = now - lastInvalidationRef.current;
+    const warmerCountChanged = warmerCountRef.current !== warmerItems.length;
+
+    // Invalidate waste query if warmer count changed and at least 500ms have passed
+    if (warmerCountChanged && timeSinceLastInvalidation >= 500) {
+      queryClient.invalidateQueries({ queryKey: ['waste'] });
+      lastInvalidationRef.current = now;
+    }
+
+    warmerCountRef.current = warmerItems.length;
+  }, [warmerItems.length, queryClient]);
 
   // Fetch active preparations
   const { data: preparations = [] } = useQuery({
