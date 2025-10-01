@@ -77,35 +77,32 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 
 ```text
 inngest-workshop/
-├── app/                    # Next.js app directory
-│   ├── api/               # API routes
-│   │   ├── orders/        # Order management
-│   │   ├── foodwarmer/    # Inventory tracking
-│   │   ├── preparations/  # Food preparation tracking
-│   │   ├── waste/         # Waste metrics
-│   │   ├── events/        # Event triggers
-│   │   ├── dev/           # Development utilities
-│   │   └── inngest/       # Inngest webhook
-│   └── kitchen/           # Dashboard UI
-├── db/                    # Database schema
-├── inngest/               # Event functions
-│   ├── client.ts         # Inngest client setup
-│   └── functions/        # Your workshop code goes here!
-│       ├── index.ts                # Function exports
-│       ├── process-order.ts        # Order processing (provided)
-│       ├── prepare-food.ts         # Exercise 1: Food preparation
-│       ├── warmer-management.ts    # Exercise 2: Warmer inventory
-│       └── fulfill-order.ts        # Exercise 3: Order fulfillment
-├── lib/                   # Utilities
-└── components/            # UI components
+├── app/                                                 # Next.js app directory
+│   ├── api/                                             # API routes
+│   │   ├── (orders, foodwarmer, preparations, waste)/   # CRUD endpoints for DevTools manual simulation
+│   │   ├── events/                                      # Event triggers for Inngest workflows
+│   │   ├── inngest/                                     # Inngest webhook endpoint
+│   │   └── dev/                                         # Development utilities (database reset)
+│   └── kitchen/                                         # Dashboard UI with event trigger buttons
+├── db/                                                  # Database schema and connection
+├── inngest/                                             # Event-driven functions (your workshop code!)
+│   ├── client.ts                                        # Inngest client setup
+│   └── functions/                                       # Implement these for the workshop
+│       ├── index.ts                                     # Function exports
+│       ├── process-order.ts                             # Order processing (provided)
+│       ├── prepare-food.ts                              # Exercise 1: Food preparation
+│       ├── warmer-management.ts                         # Exercise 2: Warmer inventory
+│       └── fulfill-order.ts                             # Exercise 3: Order fulfillment
+├── lib/                                                 # Utilities and constants
+└── components/                                          # React UI components (DevTools, etc.)
 ```
 
 ## 🍔 The Kitchen System
 
 ### Food Types
 
-- **🍟 Fries**: 2 sec prep, makes a batch of 8 fries, 8 sec shelf life
 - **🍔 Burgers**: 5 sec prep, makes a batch of 5 burgers, 10 sec shelf life
+- **🍟 Fries**: 2 sec prep, makes a batch of 8 fries, 8 sec shelf life
 - **🥤 Sodas**: Instant (0 sec prep), gets added to the order immediately
 
 ### Core Concepts
