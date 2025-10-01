@@ -1,72 +1,80 @@
 import { Inngest, EventSchemas } from 'inngest';
 
+// Direct type definitions to avoid namespace issues
+type FoodType = 'fries' | 'burger' | 'soda';
+type OrderId = number;
+type CustomerName = string | null;
+type TableNumber = number;
+type WarmerId = number;
+type WasteReason = 'expired' | 'cancelled' | 'mistake';
+
 // Define typed events for kitchen operations
 type KitchenEvents = {
   'order.created': {
     data: {
-      orderId: FastFood['Order']['id'];
-      customerName: FastFood['Order']['customerName'] | null;
-      tableNumber: FastFood['Order']['tableNumber'];
+      orderId: OrderId;
+      customerName: CustomerName | null;
+      tableNumber: TableNumber;
       items: Array<{
-        foodType: FastFood['FoodType'];
+        foodType: FoodType;
         quantity: number;
       }>;
     };
   };
   'food.prepare': {
     data: {
-      foodType: FastFood['FoodType'];
+      foodType: FoodType;
       quantity: number;
-      orderId: FastFood['Order']['id'];
+      orderId: OrderId;
       batchId: string;
     };
   };
   'food.ready': {
     data: {
-      foodType: FastFood['FoodType'];
+      foodType: FoodType;
       quantity: number;
       batchId: string;
-      warmerId: FastFood['FoodWarmerItem']['id'];
+      warmerId: WarmerId;
       expiresAt: string; // ISO string
     };
   };
   'food.expired': {
     data: {
-      warmerId: FastFood['FoodWarmerItem']['id'];
-      foodType: FastFood['FoodType'];
+      warmerId: WarmerId;
+      foodType: FoodType;
       quantity: number;
-      reason: FastFood['WasteReason'];
+      reason: WasteReason;
     };
   };
   'order.fulfilled': {
     data: {
-      orderId: FastFood['Order']['id'];
-      customerName: FastFood['Order']['customerName'] | null;
-      tableNumber: FastFood['Order']['tableNumber'];
+      orderId: OrderId;
+      customerName: CustomerName | null;
+      tableNumber: TableNumber;
       fulfilledAt: string; // ISO string
     };
   };
   'order.item.placed': {
     data: {
-      orderId: FastFood['Order']['id'];
-      foodType: FastFood['FoodType'];
+      orderId: OrderId;
+      foodType: FoodType;
       quantity: number;
-      warmerId?: FastFood['FoodWarmerItem']['id']; // Optional - present when from warmer
+      warmerId?: WarmerId; // Optional - present when from warmer
     };
   };
   'warmer.item.add': {
     data: {
-      foodType: FastFood['FoodType'];
-      orderId: FastFood['Order']['id'];
+      foodType: FoodType;
+      orderId: OrderId;
       batchId: string;
       expiresAt: string; // ISO string
     };
   };
   'warmer.item.remove': {
     data: {
-      warmerId: FastFood['FoodWarmerItem']['id'];
-      orderId: FastFood['Order']['id'];
-      foodType: FastFood['FoodType'];
+      warmerId: WarmerId;
+      orderId: OrderId;
+      foodType: FoodType;
       quantity: number;
     };
   };
