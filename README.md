@@ -91,6 +91,11 @@ inngest-workshop/
 ├── inngest/               # Event functions
 │   ├── client.ts         # Inngest client setup
 │   └── functions/        # Your workshop code goes here!
+│       ├── index.ts                # Function exports
+│       ├── process-order.ts        # Order processing (provided)
+│       ├── prepare-food.ts         # Exercise 1: Food preparation
+│       ├── warmer-management.ts    # Exercise 2: Warmer inventory
+│       └── fulfill-order.ts        # Exercise 3: Order fulfillment
 ├── lib/                   # Utilities
 └── components/            # UI components
 ```
