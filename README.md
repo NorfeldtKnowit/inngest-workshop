@@ -66,14 +66,12 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
    - Kitchen manual simulation walkthrough
 
 2. **Hands-on Exercises (90 min)**
-   You'll implement three core Inngest functions:
+   You'll implement three core Inngest functions (exercise instructions are written as code comments in the files listed):
    - Exercise 1: **prepare-food.ts** - Implement food preparation with realistic cooking times
    - Exercise 2: **warmer-management.ts** - Handle adding/removing items from the food warmer
    - Exercise 3: **fulfill-order.ts** - Complete orders when all items are ready
 
    **Note**: Inngest functions use direct database access via `import { db } from '@/db'` - no API calls needed! This is a best practice for internal event-driven systems.
-
-See `workshop/exercises.md` for detailed instructions.
 
 ## 🏗️ Project Structure
 
