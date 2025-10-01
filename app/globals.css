@@ -247,11 +247,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground relative overflow-hidden;
+    @apply bg-background text-foreground relative;
   }
   body::before {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: -50%;
     background: linear-gradient(
       30deg,

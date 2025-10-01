@@ -451,9 +451,9 @@ export const DevTools: FC = () => {
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <div ref={panelRef} className="fixed bottom-0 right-4 w-[350px] bg-amber-50 border-2 border-amber-800 shadow-[8px_8px_0px_rgba(120,53,15,0.4)] z-50 flex flex-col">
+      <div ref={panelRef} className="fixed bottom-0 right-4 w-[350px] max-h-[90vh] bg-amber-50 border-2 border-amber-800 shadow-[8px_8px_0px_rgba(120,53,15,0.4)] z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b-2 border-amber-800 bg-amber-100">
+      <div className="flex items-center justify-between p-4 border-b-2 border-amber-800 bg-amber-100 flex-shrink-0">
         <h2 className="text-lg font-bold text-amber-900 uppercase">🛠️ FastFood Dev Tools</h2>
         <button
           onClick={() => setIsOpen(false)}
@@ -465,7 +465,7 @@ export const DevTools: FC = () => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0">
         {/* Order Queue */}
         <div className="space-y-2">
           <h3 className="font-bold text-sm flex items-center text-green-900 uppercase bg-green-100 px-3 py-1 border border-green-900 inline-block w-fit mb-3">

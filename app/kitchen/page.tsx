@@ -92,8 +92,8 @@ export default function KitchenDashboard() {
   return (
     <div className="min-h-screen relative">
       {/* Background Image */}
-      <div 
-        className="fixed inset-0 z-0"
+      <div
+        className="fixed inset-0 z-0 overflow-hidden"
         style={{
           backgroundImage: 'url(/background.PNG)',
           backgroundSize: '300px auto',
