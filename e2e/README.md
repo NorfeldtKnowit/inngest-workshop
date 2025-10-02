@@ -49,33 +49,27 @@ Each test file follows this pattern:
 2. **Navigate to kitchen** - Opens `http://localhost:3000/kitchen`
 3. **Run test scenarios** - Tests specific functionality
 
-### Exercise 1: prepare-food.spec.ts
+### Exercise 1: exercise1-prepare-food.spec.ts
 
 Tests for the food preparation workflow:
 
 - Food preparation starts and completes
-- Batch cooking works correctly
-- Expiration times are set properly
 
-### Exercise 2: warmer-management.spec.ts
+### Exercise 2: exercise2-warmer-management.spec.ts
 
 Tests for warmer inventory management:
 
 - Items are added to warmer after preparation
-- Items are removed when orders need them
-- Items go directly to orders if already waiting
-- Expired items are handled correctly
-- Retry logic when items not found
+- Multiple food types are added to warmer
+- Expired items are removed from warmer
 
-### Exercise 3: fulfill-order.spec.ts
+### Exercise 3: exercise3-fulfill-order.spec.ts
 
 Tests for order fulfillment:
 
-- Order tray is updated when items are placed
-- Orders are marked ready when complete
-- Partial orders remain in preparing status
-- Multiple orders work independently
-- Timestamps are updated correctly
+- Smoke test: can find ready order in UI
+- Simple single-item orders are completed and marked as ready
+- Multi-item orders are completed and marked as ready
 
 ## Writing Tests
 
