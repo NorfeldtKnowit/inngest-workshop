@@ -112,6 +112,77 @@ inngest-workshop/
 3. **Food Warmer**: Acts as a cache for prepared food with real-time expiration tracking. Items are allocated on a first-in-first-out (FIFO) basis.
 4. **Expiration & Waste**: Food items have a shelf life and automatically expire. The system tracks waste from expired items.
 
+## 🏗️ Event-Driven Architecture
+
+### Table Responsibilities (One Table Per Function)
+
+Each Inngest function is responsible for managing specific database tables:
+
+- **process-order** → `orders`, `orderItems` (creation and orchestration)
+- **prepare-food** → `activePreparations` (food being cooked)
+- **warmer-management** → `foodWarmer`, `wasteLog` (inventory and waste tracking)
+- **fulfill-order** → `orderItems.placedOnTray`, `orders.status` (completion tracking)
+- **match-warmer-to-orders** → No tables (reads `orderItems` + `foodWarmer` to orchestrate)
+
+### Event Flow
+
+```text
+order.created
+  ↓
+process-order
+  - Creates order in orders/orderItems tables
+  - Checks warmer inventory
+  - IF items available: sends warmer.item.remove events (with warmerIds)
+  - IF items missing: sends food.prepare event
+
+food.prepare
+  ↓
+prepare-food
+  - Inserts into activePreparations table
+  - Sleeps for cooking time (step.sleep)
+  - Sends warmer.item.add events (one per item in batch)
+  - Deletes from activePreparations
+
+warmer.item.add
+  ↓
+warmer-management
+  - ALWAYS adds to foodWarmer table
+  - Sends warmer.inventory.changed event
+  - Sleeps until expiration
+  - Removes expired items, updates wasteLog
+
+warmer.inventory.changed (DEBOUNCED 500ms per food type)
+  ↓
+match-warmer-to-orders
+  - Queries pending orders from orderItems
+  - Queries available inventory from foodWarmer
+  - Matches inventory to orders (FIFO)
+  - Sends warmer.item.remove events for matched items
+
+warmer.item.remove
+  ↓
+warmer-management
+  - Removes from foodWarmer table
+  - Sends order.item.placed event
+
+order.item.placed
+  ↓
+fulfill-order
+  - Updates orderItems.placedOnTray (atomic increment)
+  - Checks if all items for this order are complete
+  - Updates orders.status to 'ready' when complete
+```
+
+### Key Architectural Principles
+
+1. **Single Responsibility**: Each function owns specific tables and only writes to those tables
+2. **Event-Driven Communication**: Functions communicate through typed events, not direct function calls
+3. **Orchestration Pattern**: Orchestrator functions (like `process-order`, `match-warmer-to-orders`) can READ multiple tables but only WRITE to their own
+4. **Durable Execution**: Events are sent outside `step.run()` to ensure they're only sent once
+5. **Debouncing**: `match-warmer-to-orders` uses debounce to batch multiple `warmer.inventory.changed` events
+6. **Race Condition Prevention**: Per-order debouncing prevents multiple items from being incorrectly allocated
+7. **FIFO Allocation**: Both warmer items and order matching use first-in-first-out ordering
+
 ## 🛠️ Available Scripts
 
 ```bash
