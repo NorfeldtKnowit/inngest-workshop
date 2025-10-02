@@ -78,6 +78,12 @@ type KitchenEvents = {
       quantity: number;
     };
   };
+  'warmer.inventory.changed': {
+    data: {
+      foodType: FoodType;
+      totalCount: number;
+    };
+  };
 };
 
 // Create the Inngest client with typed event schemas
@@ -95,3 +101,4 @@ export type OrderFulfilledEvent = KitchenEvents['order.fulfilled'];
 export type OrderItemPlacedEvent = KitchenEvents['order.item.placed'];
 export type WarmerItemAddEvent = KitchenEvents['warmer.item.add'];
 export type WarmerItemRemoveEvent = KitchenEvents['warmer.item.remove'];
+export type WarmerInventoryChangedEvent = KitchenEvents['warmer.inventory.changed'];
