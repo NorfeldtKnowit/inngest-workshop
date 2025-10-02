@@ -18,12 +18,16 @@ export const PreparationItem: FC<PreparationItemProps> = ({ preparation }) => {
     preparation.status
   );
 
+  // Use preparation ID to deterministically pick animation variant (1-5)
+  const animationClass = `animate-zoom-in-${(preparation.id % 5) + 1}`;
+
   return (
-    <div 
+    <div
       className={cn(
         "p-4 border-2 transition-all",
-        isReady ? 
-          "bg-green-100 border-green-800 shadow-[3px_3px_0px_rgba(22,101,52,0.8)] animate-wiggle" : 
+        animationClass,
+        isReady ?
+          "bg-green-100 border-green-800 shadow-[3px_3px_0px_rgba(22,101,52,0.8)] animate-wiggle" :
           "bg-white border-yellow-800 shadow-[3px_3px_0px_rgba(113,63,18,0.8)]"
       )}
     >

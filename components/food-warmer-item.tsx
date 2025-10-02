@@ -12,17 +12,21 @@ type FoodWarmerItemProps = {
 };
 
 export const FoodWarmerItem: FC<FoodWarmerItemProps> = ({ item }) => {
-  const shelfLife = item.foodType === 'fries' ? 8000 : 
+  const shelfLife = item.foodType === 'fries' ? 8000 :
                    item.foodType === 'burger' ? 10000 : Infinity;
-  
+
   const { percentage, isExpired, isExpiring } = useFoodWarmerCountdown(item.expiresAt, shelfLife);
 
+  // Use item ID to deterministically pick animation variant (1-5)
+  const animationClass = `animate-zoom-in-${(item.id % 5) + 1}`;
+
   return (
-    <div 
+    <div
       className={cn(
         "p-4 border-2 transition-all",
+        animationClass,
         isExpired ? "bg-orange-200 border-orange-800 shadow-[3px_3px_0px_rgba(154,52,18,0.8)] animate-wiggle" :
-        isExpiring ? "bg-orange-100 border-orange-800 shadow-[3px_3px_0px_rgba(154,52,18,0.8)]" : 
+        isExpiring ? "bg-orange-100 border-orange-800 shadow-[3px_3px_0px_rgba(154,52,18,0.8)]" :
         "bg-white border-orange-800 shadow-[3px_3px_0px_rgba(154,52,18,0.8)]"
       )}
     >
