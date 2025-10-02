@@ -49,7 +49,6 @@ const ToastContainer: FC<{ toasts: Toast[]; removeToast: (id: number) => void }>
 export const DevTools: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [counts, setCounts] = useState<{ orders: number; orderItems: number; foodWarmer: number; wasteLog: number; activePreparations: number } | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -79,13 +78,14 @@ export const DevTools: FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Fetch current counts
+  // Fetch current counts (for potential future use)
   const fetchCounts = async (): Promise<void> => {
     try {
       const res = await fetch('/api/dev/reset');
       const data = await res.json();
-      if (data.success) {
-        setCounts(data.data);
+      // Future: could display counts in UI
+      if (!data.success) {
+        console.error('Failed to fetch counts');
       }
     } catch (error) {
       console.error('Failed to fetch counts:', error);
