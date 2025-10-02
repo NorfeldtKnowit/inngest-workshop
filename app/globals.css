@@ -58,6 +58,107 @@
       transform: rotate(0deg);
     }
   }
+
+  @keyframes zoom-bounce-in-1 {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-8deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05) rotate(3deg);
+    }
+    80% {
+      transform: scale(0.95) rotate(-1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes zoom-bounce-in-2 {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(7deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05) rotate(-3deg);
+    }
+    80% {
+      transform: scale(0.95) rotate(2deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes zoom-bounce-in-3 {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-5deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05) rotate(2deg);
+    }
+    80% {
+      transform: scale(0.95) rotate(-1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes zoom-bounce-in-4 {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(6deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05) rotate(-2deg);
+    }
+    80% {
+      transform: scale(0.95) rotate(1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes zoom-bounce-in-5 {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-9deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05) rotate(4deg);
+    }
+    80% {
+      transform: scale(0.95) rotate(-2deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes zoom-out {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
   
   .animate-slide-up {
     animation: slide-up 0.3s ease-out;
@@ -69,6 +170,26 @@
   
   .animate-wiggle {
     animation: wiggle 2s ease-in-out infinite;
+  }
+
+  .animate-zoom-in-1 {
+    animation: zoom-bounce-in-1 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-zoom-in-2 {
+    animation: zoom-bounce-in-2 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-zoom-in-3 {
+    animation: zoom-bounce-in-3 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-zoom-in-4 {
+    animation: zoom-bounce-in-4 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-zoom-in-5 {
+    animation: zoom-bounce-in-5 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   /* Neubrutalism Shadow Utilities */
