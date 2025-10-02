@@ -130,7 +130,14 @@ export default function KitchenDashboard() {
                 Order Queue
               </CardTitle>
               <CardDescription className="text-green-900 font-bold">
-                {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length} active orders
+                {(() => {
+                  const preparingCount = orders.filter(o => o.status === 'pending' || o.status === 'preparing').length;
+                  const readyCount = orders.filter(o => o.status === 'ready').length;
+                  const parts = [];
+                  if (preparingCount > 0) parts.push(`${preparingCount} preparing`);
+                  if (readyCount > 0) parts.push(`${readyCount} ready`);
+                  return parts.length > 0 ? parts.join(' • ') : 'No orders';
+                })()}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
