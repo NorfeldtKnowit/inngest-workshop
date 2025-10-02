@@ -154,10 +154,15 @@ export default function KitchenDashboard() {
             <CardContent className="space-y-3">
               {orders
                 .filter(order => order.status !== 'delivered' && order.status !== 'cancelled')
-                .map((order) => (
-                  <div 
-                    key={order.id} 
-                    className="p-4 bg-white border-2 border-green-800 shadow-[3px_3px_0px_rgba(22,101,52,0.6)] hover:shadow-[1px_1px_0px_rgba(22,101,52,0.6)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                .map((order) => {
+                  const animationClass = `animate-zoom-in-${(order.id % 5) + 1}`;
+                  return (
+                  <div
+                    key={order.id}
+                    className={cn(
+                      "p-4 bg-white border-2 border-green-800 shadow-[3px_3px_0px_rgba(22,101,52,0.6)] hover:shadow-[1px_1px_0px_rgba(22,101,52,0.6)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all",
+                      animationClass
+                    )}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-sm text-green-900 uppercase">
@@ -186,7 +191,8 @@ export default function KitchenDashboard() {
                       ))}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length === 0 && (
                 <div className="text-center py-16 text-green-700">
                   <span className="text-6xl mb-4 block">🍽️</span>
