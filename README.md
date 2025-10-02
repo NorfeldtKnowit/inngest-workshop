@@ -15,7 +15,7 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 
 ### Prerequisites
 
-- Node.js 18+ installed
+- Node.js 18.17+ installed
 - npm or yarn package manager
 - Git
 - Code editor (VS Code recommended)
@@ -79,7 +79,10 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 inngest-workshop/
 ├── app/                                                 # Next.js app directory
 │   ├── api/                                             # API routes
-│   │   ├── (orders, foodwarmer, preparations, waste)/   # CRUD endpoints for DevTools manual simulation
+│   │   ├── orders/                                      # Order management endpoints
+│   │   ├── foodwarmer/                                  # Food warmer inventory endpoints
+│   │   ├── preparations/                                # Active preparation endpoints
+│   │   ├── waste/                                       # Waste tracking endpoints
 │   │   ├── events/                                      # Event triggers for Inngest workflows
 │   │   ├── inngest/                                     # Inngest webhook endpoint
 │   │   └── dev/                                         # Development utilities (database reset)
@@ -92,9 +95,18 @@ inngest-workshop/
 │       ├── process-order.ts                             # Order processing (provided)
 │       ├── prepare-food.ts                              # Exercise 1: Food preparation
 │       ├── warmer-management.ts                         # Exercise 2: Warmer inventory
-│       └── fulfill-order.ts                             # Exercise 3: Order fulfillment
+│       └── fulfill-order.ts                             # Exercise 3: Order fulfillment + warmer matching
 ├── lib/                                                 # Utilities and constants
-└── components/                                          # React UI components (DevTools, etc.)
+│   ├── constants.ts                                     # Food configuration
+│   ├── hooks/                                           # Custom React hooks
+│   └── utils.ts                                         # Utility functions
+├── components/                                          # React UI components
+│   └── ui/                                              # shadcn/ui components
+├── e2e/                                                 # Playwright end-to-end tests
+│   ├── exercise1-prepare-food.spec.ts                   # Exercise 1 tests
+│   ├── exercise2-warmer-management.spec.ts              # Exercise 2 tests
+│   └── exercise3-fulfill-order.spec.ts                  # Exercise 3 tests
+└── public/                                              # Static assets
 ```
 
 ## 🍔 The Kitchen System
@@ -124,6 +136,8 @@ Each Inngest function is responsible for managing specific database tables:
 - **fulfill-order** → `orderItems.placedOnTray`, `orders.status` (completion tracking)
 - **match-warmer-to-orders** → No tables (reads `orderItems` + `foodWarmer` to orchestrate)
 
+**Note**: The `fulfill-order.ts` file contains both `fulfillOrder` and `matchWarmerToOrders` functions.
+
 ### Event Flow
 
 ```text
@@ -150,8 +164,9 @@ warmer-management
   - Sends warmer.inventory.changed event
   - Sleeps until expiration
   - Removes expired items, updates wasteLog
+  - Sends food.expired event (if item actually expired)
 
-warmer.inventory.changed (DEBOUNCED 500ms per food type)
+warmer.inventory.changed (DEBOUNCED 1s per food type)
   ↓
 match-warmer-to-orders
   - Queries pending orders from orderItems
@@ -186,13 +201,31 @@ fulfill-order
 ## 🛠️ Available Scripts
 
 ```bash
+# Development
+npm run setup        # Install dependencies and set up database
 npm run dev          # Start all dev servers (Next.js on :3000, Inngest on :8288, Drizzle Studio on https://local.drizzle.studio)
 npm run dev:next     # Start only Next.js development server (http://localhost:3000)
 npm run inngest:dev  # Start only Inngest Dev Server (http://localhost:8288)
+
+# Database
 npm run db:studio    # Open Drizzle Studio (https://local.drizzle.studio/)
 npm run db:push      # Apply database schema changes
+npm run db:generate  # Generate database migration files
+
+# Testing
+npm run test         # Run Playwright tests
+npm run test:ui      # Run Playwright tests with UI
+npm run test:debug   # Run Playwright tests in debug mode
+npm run test:exercise1  # Test Exercise 1: Food Preparation
+npm run test:exercise2  # Test Exercise 2: Warmer Management
+npm run test:exercise3  # Test Exercise 3: Order Fulfillment
+
+# Code Quality
 npm run lint         # Run linter
+
+# Production
 npm run build        # Build for production
+npm run start        # Start production server
 ```
 
 ### Database Management
@@ -240,9 +273,9 @@ The APIs below are primarily used by the frontend dashboard and for development/
 
 - `GET /api/foodwarmer` - Get current inventory
 - `POST /api/foodwarmer` - Add prepared items
-- `DELETE /api/foodwarmer` - Bulk delete expired items
+- `DELETE /api/foodwarmer?foodType={type}&quantity={num}` - Remove items by food type (FIFO)
 - `DELETE /api/foodwarmer/:id` - Remove specific item
-- `POST /api/foodwarmer/:id` - (Internal) Use warmer item for order
+- `POST /api/foodwarmer/:id` - Bulk delete all expired items (requires `{ removeAllExpired: true }`)
 
 ### Food Preparations
 
