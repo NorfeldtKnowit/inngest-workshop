@@ -54,6 +54,7 @@ export const POST = async (request: Request): Promise<Response> => {
       foodType,
       quantity,
       status: 'preparing',
+      startedAt: now,
       completesAt,
     };
 
