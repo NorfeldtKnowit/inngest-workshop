@@ -15,7 +15,7 @@
 /playwright-report/
 /test-results/
 /playwright/.cache/
-.playwright-mcp/kitchen-page.png
+.playwright-mcp/
 
 # next.js
 /.next/
