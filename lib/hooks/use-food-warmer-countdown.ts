@@ -8,7 +8,7 @@ type CountdownState = {
 };
 
 export const useFoodWarmerCountdown = (expiresAt: Date, shelfLife: number): CountdownState => {
-  const expirationTimeRef = useRef(new Date(expiresAt).getTime());
+  const expirationTimeRef = useRef(expiresAt.getTime());
   const [state, setState] = useState<CountdownState>({
     remainingSeconds: 0,
     percentage: 0,
@@ -18,7 +18,7 @@ export const useFoodWarmerCountdown = (expiresAt: Date, shelfLife: number): Coun
 
   useEffect(() => {
     // Update ref if expiresAt changes
-    expirationTimeRef.current = new Date(expiresAt).getTime();
+    expirationTimeRef.current = expiresAt.getTime();
 
     const calculateState = (): void => {
       const now = Date.now();
@@ -39,8 +39,8 @@ export const useFoodWarmerCountdown = (expiresAt: Date, shelfLife: number): Coun
     // Set initial state
     calculateState();
 
-    // Update every second
-    const interval = setInterval(calculateState, 1000);
+    // Update every 500ms for smooth progress
+    const interval = setInterval(calculateState, 500);
 
     return () => clearInterval(interval);
   }, [expiresAt, shelfLife]);

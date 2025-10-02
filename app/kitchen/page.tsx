@@ -25,7 +25,7 @@ export default function KitchenDashboard() {
       const result = await response.json() as FastFood['ApiResponse'];
       return result.data || [];
     },
-    refetchInterval: 1000,
+    refetchInterval: 300,
   });
 
   // Fetch food warmer items
@@ -34,9 +34,14 @@ export default function KitchenDashboard() {
     queryFn: async (): Promise<FoodWarmerItem[]> => {
       const response = await fetch('/api/foodwarmer');
       const result = await response.json() as FastFood['ApiResponse'];
-      return result.data?.inventory || [];
+      const data = result.data?.inventory || [];
+      // Convert date strings to Date objects
+      return data.map((item: FoodWarmerItem) => ({
+        ...item,
+        expiresAt: new Date(item.expiresAt),
+      }));
     },
-    refetchInterval: 1000,
+    refetchInterval: 300,
   });
 
   // Fetch waste data
@@ -47,7 +52,7 @@ export default function KitchenDashboard() {
       const result = await response.json();
       return result.data;
     },
-    refetchInterval: 5000,
+    refetchInterval: 300,
   });
 
   // Throttled invalidation when warmer state changes
@@ -74,9 +79,15 @@ export default function KitchenDashboard() {
     queryFn: async (): Promise<ActivePreparation[]> => {
       const response = await fetch('/api/preparations');
       const result = await response.json() as FastFood['ApiResponse'];
-      return result.data || [];
+      const data = result.data || [];
+      // Convert date strings to Date objects
+      return data.map((prep: ActivePreparation) => ({
+        ...prep,
+        startedAt: new Date(prep.startedAt),
+        completesAt: new Date(prep.completesAt),
+      }));
     },
-    refetchInterval: 500, // More frequent updates for countdown
+    refetchInterval: 300,
   });
 
   // Helper function to get badge variant based on status

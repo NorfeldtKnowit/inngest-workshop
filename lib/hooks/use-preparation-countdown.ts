@@ -11,8 +11,8 @@ export const usePreparationCountdown = (
   completesAt: Date,
   status: 'preparing' | 'ready'
 ): PreparationCountdownState => {
-  const startTimeRef = useRef(new Date(startedAt).getTime());
-  const completeTimeRef = useRef(new Date(completesAt).getTime());
+  const startTimeRef = useRef(startedAt.getTime());
+  const completeTimeRef = useRef(completesAt.getTime());
   
   const [state, setState] = useState<PreparationCountdownState>({
     remainingSeconds: 0,
@@ -22,16 +22,20 @@ export const usePreparationCountdown = (
 
   useEffect(() => {
     // Update refs if times change
-    startTimeRef.current = new Date(startedAt).getTime();
-    completeTimeRef.current = new Date(completesAt).getTime();
+    startTimeRef.current = startedAt.getTime();
+    completeTimeRef.current = completesAt.getTime();
 
     const calculateState = (): void => {
       const now = Date.now();
       const totalTime = completeTimeRef.current - startTimeRef.current;
-      const elapsed = now - startTimeRef.current;
       const remainingMs = Math.max(0, completeTimeRef.current - now);
       const remainingSeconds = Math.ceil(remainingMs / 1000);
-      const percentage = Math.min(100, (elapsed / totalTime) * 100);
+
+      // Show remaining time percentage (empties down as cooking progresses)
+      const percentage = totalTime > 0
+        ? Math.max(0, (remainingMs / totalTime) * 100)
+        : 0;
+
       const isReady = remainingMs === 0 || status === 'ready';
 
       setState({
@@ -44,8 +48,8 @@ export const usePreparationCountdown = (
     // Set initial state
     calculateState();
 
-    // Update every 100ms for smoother progress bar
-    const interval = setInterval(calculateState, 100);
+    // Update every 500ms for smooth progress
+    const interval = setInterval(calculateState, 500);
 
     return () => clearInterval(interval);
   }, [startedAt, completesAt, status]);
