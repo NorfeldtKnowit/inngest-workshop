@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  logging: {
+    incomingRequests: {
+      ignore: [
+        /\/api\/(orders|foodwarmer|preparations|waste)$/  // Ignore polling endpoints
+      ]
+    }
+  }
 };
 
 export default nextConfig;
