@@ -1,9 +1,10 @@
-import { inngest } from '@/inngest/client';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from '@/db';
 import { activePreparations } from '@/db/schema';
+import { inngest } from '@/inngest/client';
 import { FOOD_CONFIG } from '@/lib/constants';
 import type { InferInsertModel } from 'drizzle-orm';
-import { eq } from 'drizzle-orm';
+// import { eq } from 'drizzle-orm';
 
 export const prepareFood = inngest.createFunction(
   {
@@ -46,42 +47,39 @@ export const prepareFood = inngest.createFunction(
 
     // Step 4: Mark preparation as ready
     await step.run('mark-preparation-ready', async () => {
-      await db
-        .update(activePreparations)
-        .set({ status: 'ready' })
-        .where(eq(activePreparations.id, preparation.id));
+      // TODO: Update the activePreparations table
+      // - Set the status field to 'ready'
+      // - Update only the record where activePreparations.id equals preparation.id
+      // Hint: Use db.update(activePreparations).set({...}).where(...)
     });
 
     // Step 5: Dispatch events to add food to the warmer
-    const expiresAt = new Date(Date.now() + foodConfig.shelfLife).toISOString();
+    // TODO: Calculate when the food items will expire
+    // - Use the foodConfig.shelfLife to determine expiration time
+    // - Create an ISO string for the expiresAt timestamp
+    // - Store it in a variable called expiresAt
 
-    for (let i = 0; i < quantity; i++) {
-      await step.sendEvent(`Add item ${i + 1} to warmer`, {
-        name: 'warmer.item.add',
-        data: {
-          foodType,
-          orderId,
-          batchId,
-          expiresAt,
-        },
-      });
-    }
+    // TODO: Send warmer.item.add events for each item in the batch
+    // - Loop through the quantity (for each item that was prepared)
+    // - Use step.sendEvent() to send a 'warmer.item.add' event for each item
+    // - Each event should include: foodType, orderId, batchId, expiresAt
+    // - Give each event a unique description like "Add item 1 to warmer", "Add item 2 to warmer", etc.
 
     // Step 6: Remove from active preparations
     await step.run('remove-preparation', async () => {
-      await db
-        .delete(activePreparations)
-        .where(eq(activePreparations.id, preparation.id));
+      // TODO: Delete the preparation record from the database
+      // - Delete from activePreparations table
+      // - Only delete the record where activePreparations.id equals preparation.id
+      // Hint: Use db.delete(activePreparations).where(...)
     });
 
-    // Return the result
-    return {
-      preparationId: preparation.id,
-      foodType,
-      quantity,
-      batchId,
-      prepTime,
-      status: 'completed' as const,
-    };
+    // TODO: Return the result object
+    // Return an object with:
+    // - preparationId: preparation.id
+    // - foodType: the food type that was prepared
+    // - quantity: number of items prepared
+    // - batchId: the batch identifier
+    // - prepTime: time it took to prepare
+    // - status: 'completed' (use 'as const' for type safety)
   }
 );

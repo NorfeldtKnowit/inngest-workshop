@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { inngest } from '@/inngest/client';
-import { db } from '@/db';
-import { orderItems, orders, foodWarmer } from '@/db/schema';
-import { eq, and, sql, gte } from 'drizzle-orm';
+// import { db } from '@/db';
+// import { orderItems, orders, foodWarmer } from '@/db/schema';
+// import { eq, and, sql, gte } from 'drizzle-orm';
 
 export const fulfillOrder = inngest.createFunction(
   {
@@ -13,92 +14,57 @@ export const fulfillOrder = inngest.createFunction(
     const { orderId, foodType, quantity } = event.data;
 
     // Step 1: Update order tray
-    const updatedOrderItem = await step.run('update-order-tray', async () => {
-      const [updated] = await db
-        .update(orderItems)
-        .set({
-          placedOnTray: sql`${orderItems.placedOnTray} + ${quantity}`,
-        })
-        .where(
-          and(
-            eq(orderItems.orderId, orderId),
-            eq(orderItems.foodType, foodType)
-          )
-        )
-        .returning();
-
-      return updated ?? null;
-    });
+    // TODO: Create a step.run() named 'update-order-tray'
+    // - Update the orderItems table
+    // - Increment placedOnTray by the quantity (use sql`${orderItems.placedOnTray} + ${quantity}`)
+    // - Filter where orderId matches AND foodType matches (use and() with eq() for both)
+    // - Use .returning() to get the updated item
+    // - Return the updated item, or null if not found
+    // - Store the result in a variable called updatedOrderItem
+    // Hint: Use db.update(orderItems).set({...}).where(and(...)).returning()
 
     // If order item doesn't exist, order was likely cancelled
-    if (!updatedOrderItem) {
-      return {
-        orderId,
-        foodType,
-        quantity,
-        itemPlaced: false,
-        orderComplete: false,
-        reason: 'Order item not found (possibly cancelled)',
-      };
-    }
+    // TODO: Add an if statement to check if updatedOrderItem is null
+    // - If null, return an object with:
+    //   - orderId, foodType, quantity
+    //   - itemPlaced: false
+    //   - orderComplete: false
+    //   - reason: 'Order item not found (possibly cancelled)'
 
     // Step 2: Check if this food type is complete
-    const isFoodTypeComplete = updatedOrderItem.placedOnTray >= updatedOrderItem.quantity;
+    // TODO: Create a variable called isFoodTypeComplete
+    // - Check if updatedOrderItem.placedOnTray >= updatedOrderItem.quantity
+    // - This tells us if all items of this food type have been placed
 
-    if (!isFoodTypeComplete) {
-      // Food type is not complete yet, return early
-      return {
-        orderId,
-        foodType,
-        quantity,
-        itemPlaced: true,
-        orderComplete: false,
-      };
-    }
+    // TODO: Add an if statement to check if !isFoodTypeComplete
+    // - If the food type is not complete yet, return an object with:
+    //   - orderId, foodType, quantity
+    //   - itemPlaced: true
+    //   - orderComplete: false
 
     // Step 3: Check if entire order is complete
-    const isOrderComplete = await step.run('check-order-complete', async () => {
-      const items = await db
-        .select()
-        .from(orderItems)
-        .where(eq(orderItems.orderId, orderId));
+    // TODO: Create a step.run() named 'check-order-complete'
+    // - Query all orderItems for this orderId
+    // - Check if ALL items have placedOnTray >= quantity (use .every())
+    // - Return true if all items are complete, false otherwise
+    // - Store the result in a variable called isOrderComplete
 
-      // Check if all items have placedOnTray >= quantity
-      return items.every(item => item.placedOnTray >= item.quantity);
-    });
-
-    if (!isOrderComplete) {
-      // Order is not complete yet, return early
-      return {
-        orderId,
-        foodType,
-        quantity,
-        itemPlaced: true,
-        orderComplete: false,
-      };
-    }
+    // TODO: Add an if statement to check if !isOrderComplete
+    // - If the order is not complete yet, return an object with:
+    //   - orderId, foodType, quantity
+    //   - itemPlaced: true
+    //   - orderComplete: false
 
     // Step 4: Mark order as ready
-    await step.run('mark-order-ready', async () => {
-      await db
-        .update(orders)
-        .set({
-          status: 'ready',
-          updatedAt: new Date(),
-        })
-        .where(eq(orders.id, orderId));
-    });
+    // TODO: Create a step.run() named 'mark-order-ready'
+    // - Update the orders table
+    // - Set status to 'ready' and updatedAt to new Date()
+    // - Filter where orders.id equals orderId
 
-    // Step 5: Send completion notification (optional)
-    console.log(`Order ${orderId} is now ready!`);
-
-    return {
-      orderId,
-      foodType,
-      quantity,
-      itemPlaced: true,
-      orderComplete: true,
-    };
+    // TODO: Return an object with:
+    // - orderId, foodType, quantity
+    // - itemPlaced: true
+    // - orderComplete: true
   }
 );
 
@@ -117,71 +83,52 @@ export const matchWarmerToOrders = inngest.createFunction(
     const { foodType } = event.data;
 
     // Step 1: Find pending orders that need this food type
-    const pendingOrders = await step.run('find-pending-orders', async () => {
-      // Get all order items that need this food type
-      const items = await db
-        .select()
-        .from(orderItems)
-        .where(eq(orderItems.foodType, foodType))
-        .orderBy(orderItems.id); // FIFO by creation order
+    // TODO: Create a step.run() named 'find-pending-orders'
+    // - Query all orderItems with this foodType
+    // - Order by orderItems.id (FIFO - oldest orders first)
+    // - Filter the results to only include items where placedOnTray < quantity
+    // - Return the filtered array
+    // - Store the result in a variable called pendingOrders
+    // Hint: Use db.select().from(orderItems).where(...).orderBy(...) then .filter()
 
-      // Filter to items that still need food
-      return items.filter(item => item.placedOnTray < item.quantity);
-    });
-
-    if (pendingOrders.length === 0) {
-      return { foodType, matched: 0, message: 'No pending orders need this food' };
-    }
+    // TODO: Add an if statement to check if pendingOrders.length === 0
+    // - If no pending orders, return an object with:
+    //   - foodType
+    //   - matched: 0
+    //   - message: 'No pending orders need this food'
 
     // Step 2: Get available warmer inventory for this food type
-    const warmerItems = await step.run('get-warmer-inventory', async () => {
-      return await db
-        .select()
-        .from(foodWarmer)
-        .where(
-          and(
-            eq(foodWarmer.foodType, foodType),
-            gte(foodWarmer.expiresAt, new Date())
-          )
-        )
-        .orderBy(foodWarmer.expiresAt); // FIFO - oldest first
-    });
+    // TODO: Create a step.run() named 'get-warmer-inventory'
+    // - Query the foodWarmer table
+    // - Filter where foodType matches AND expiresAt is >= new Date() (use and() with eq() and gte())
+    // - Order by foodWarmer.expiresAt (FIFO - oldest items first)
+    // - Return the items
+    // - Store the result in a variable called warmerItems
+    // Hint: Use db.select().from(foodWarmer).where(and(...)).orderBy(...)
 
-    if (warmerItems.length === 0) {
-      return { foodType, matched: 0, message: 'No items available in warmer' };
-    }
+    // TODO: Add an if statement to check if warmerItems.length === 0
+    // - If no items available, return an object with:
+    //   - foodType
+    //   - matched: 0
+    //   - message: 'No items available in warmer'
 
     // Step 3: Match inventory to orders (FIFO for both)
-    let warmerIndex = 0;
+    // TODO: Create a variable called warmerIndex and set it to 0
+    // - This tracks which warmer item we're allocating next
 
-    for (const orderItem of pendingOrders) {
-      const needed = orderItem.quantity - orderItem.placedOnTray;
+    // TODO: Loop through each orderItem in pendingOrders
+    // - Calculate how many items are needed: orderItem.quantity - orderItem.placedOnTray
+    // - For each needed item (while warmerIndex < warmerItems.length):
+    //   1. Get the warmer item at warmerItems[warmerIndex]
+    //   2. Increment warmerIndex
+    //   3. Send a 'warmer.item.remove' event with:
+    //      - Description: `Allocate ${foodType} to order ${orderItem.orderId}`
+    //      - Data: warmerId (warmerItem.id), orderId, foodType, quantity: 1
+    // - If warmerIndex reaches warmerItems.length, break out of the loop (no more items)
 
-      for (let i = 0; i < needed && warmerIndex < warmerItems.length; i++) {
-        const warmerItem = warmerItems[warmerIndex];
-        warmerIndex++;
-
-        // Send event to remove from warmer and add to order
-        await step.sendEvent(`Allocate ${foodType} to order ${orderItem.orderId}`, {
-          name: 'warmer.item.remove',
-          data: {
-            warmerId: warmerItem.id,
-            orderId: orderItem.orderId,
-            foodType,
-            quantity: 1,
-          },
-        });
-      }
-
-      if (warmerIndex >= warmerItems.length) {
-        break; // No more items in warmer
-      }
-    }
-
-    return {
-      foodType,
-      matched: warmerIndex,
-      pendingOrdersCount: pendingOrders.length,
-    };
+    // TODO: Return an object with:
+    // - foodType
+    // - matched: warmerIndex (total number of items matched)
+    // - pendingOrdersCount: pendingOrders.length
   }
 );
