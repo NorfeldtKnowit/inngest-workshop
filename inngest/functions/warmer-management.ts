@@ -1,19 +1,14 @@
 import type { WarmerItemAddEvent, WarmerItemRemoveEvent } from '@/inngest/client';
 import { inngest } from '@/inngest/client';
-// TODO: Import these when implementing the exercise
-// import { db } from '@/db';
-// import { foodWarmer, orderItems, orders, wasteLog } from '@/db/schema';
-// import { eq, and, sql } from 'drizzle-orm';
-// import type { InferInsertModel } from 'drizzle-orm';
-// import { FOOD_CONFIG } from '@/lib/constants';
+import { db } from '@/db';
+import { foodWarmer, wasteLog } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import type { InferInsertModel } from 'drizzle-orm';
 
 export const warmerManagement = inngest.createFunction(
   {
     id: 'warmer-management',
     name: 'Manage Food Warmer Operations',
-    concurrency: {
-      limit: 1, // Process warmer operations one at a time
-    },
     retries: 3, // Retry up to 3 times if food not available
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onFailure: async ({ error, event, step }) => {
@@ -35,93 +30,140 @@ export const warmerManagement = inngest.createFunction(
     { event: 'warmer.item.add' },
     { event: 'warmer.item.remove' }
   ],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async ({ event, step }) => {
-    // TODO: Workshop Exercise - Implement warmer management logic
-    // This function handles two events: 'warmer.item.add' and 'warmer.item.remove'
-    
     if (event.name === 'warmer.item.add') {
       const { foodType, expiresAt } = event.data as WarmerItemAddEvent['data'];
-      // Note: orderId and batchId are also available in event.data
-      
-      // TODO: Implement 'warmer.item.add' logic
-      
-      // Step 1: Check if food should go directly to order
-      // - Use step.run('check-order-needs', async () => { ... })
-      // - Query orderItems table to check if this order needs this food type
-      // - If the order already has enough of this food type on tray, continue to warmer
-      // - If order needs this food:
-      //   - Send 'order.item.placed' event with:
-      //     - orderId, foodType, quantity: 1, warmerId: undefined
-      //   - Return early (don't add to warmer)
-      
-      // Step 2: Look up shelf life for the food type
-      // - Use FOOD_CONFIG[foodType].shelfLife
-      // - Calculate how long until expiration (expiresAt - now)
-      
-      // Step 3: Add food item to warmer
-      // - Use step.run('add-to-warmer', async () => { ... })
-      // - Insert into foodWarmer table with:
-      //   - foodType
-      //   - expiresAt: new Date(expiresAt)
-      // - Return the created warmer item
-      
+
+      // Step 1: Calculate expiration delay
+      const expirationDate = new Date(expiresAt);
+      const delay = Math.max(0, expirationDate.getTime() - Date.now()); // Ensure non-negative
+
+      // Step 2: Add food item to warmer
+      const warmerItem = await step.run('add-to-warmer', async () => {
+        const [item] = await db
+          .insert(foodWarmer)
+          .values({
+            foodType,
+            expiresAt: expirationDate,
+          } satisfies InferInsertModel<typeof foodWarmer>)
+          .returning();
+
+        return item;
+      });
+
+      // Step 3: Notify that warmer inventory changed
+      const totalCount = await step.run('get-warmer-count', async () => {
+        const items = await db
+          .select()
+          .from(foodWarmer)
+          .where(eq(foodWarmer.foodType, foodType));
+
+        return items.length;
+      });
+
+      await step.sendEvent('Notify inventory changed', {
+        name: 'warmer.inventory.changed',
+        data: {
+          foodType,
+          totalCount,
+        },
+      });
+
       // Step 4: Sleep until expiration
-      // - Calculate delay in milliseconds
-      // - Use step.sleep(`expire-${warmerId}`, delayMs)
-      
-      // Step 5: After sleep, remove expired item
-      // - Use step.run('expire-item', async () => { ... })
-      // - Check if item still exists in warmer (it might have been used)
-      // - If it exists:
-      //   - Delete from foodWarmer table
-      //   - Insert into wasteLog table with:
-      //     - foodType
-      //     - quantity: 1 (always one item)
-      //     - reason: 'expired'
-      //   - Send 'food.expired' event
-      
-      // Note: Always include a name parameter when using step.sendEvent:
-      // await step.sendEvent('Send event-name event', {
-      //   name: 'event.name',
-      //   data: { ... }
-      // });
-      
+      await step.sleep(`expire-${warmerItem.id}`, delay);
+
+      // Step 5: After sleep, check and remove expired item
+      const itemStillExists = await step.run('expire-item', async () => {
+        // Check if item still exists in warmer (it might have been used)
+        const [existingItem] = await db
+          .select()
+          .from(foodWarmer)
+          .where(eq(foodWarmer.id, warmerItem.id));
+
+        if (existingItem) {
+          // Delete from foodWarmer table
+          await db
+            .delete(foodWarmer)
+            .where(eq(foodWarmer.id, warmerItem.id));
+
+          // Insert into wasteLog table
+          await db
+            .insert(wasteLog)
+            .values({
+              foodType,
+              quantity: 1,
+              reason: 'expired',
+            } satisfies InferInsertModel<typeof wasteLog>);
+
+          return true; // Item was removed
+        }
+
+        return false; // Item was already used
+      });
+
+      // Send 'food.expired' event outside step.run
+      if (itemStillExists) {
+        await step.sendEvent('Send food expired event', {
+          name: 'food.expired',
+          data: {
+            warmerId: warmerItem.id,
+            foodType,
+            quantity: 1,
+            reason: 'expired',
+          },
+        });
+      }
+
       return {
-        action: 'added',
-        warmerId: 0, // Replace with actual warmerId
+        action: 'added' as const,
+        warmerId: warmerItem.id,
         foodType,
         expiresAt,
       };
     } else {
       // Handle warmer.item.remove
       const { warmerId, orderId, foodType, quantity } = event.data as WarmerItemRemoveEvent['data'];
-      
-      // TODO: Implement 'warmer.item.remove' logic
-      
+
       // Step 1: Check if requested food exists in warmer
-      // - Use step.run('check-warmer-stock', async () => { ... })
-      // - Query foodWarmer table by warmerId
-      // - If not found, throw an error to trigger Inngest retry:
-      //   throw new Error(`Warmer item ${warmerId} not found`);
-      // - This allows the system to retry after 4 seconds when food might be ready
-      
+      const item = await step.run('check-warmer-stock', async () => {
+        const [item] = await db
+          .select()
+          .from(foodWarmer)
+          .where(eq(foodWarmer.id, warmerId));
+
+        return item ?? null;
+      });
+
+      // If item doesn't exist, it was already used or expired
+      if (!item) {
+        return {
+          action: 'skipped' as const,
+          warmerId,
+          foodType,
+          reason: 'Item already used or expired',
+        };
+      }
+
       // Step 2: Remove food from warmer
-      // - Use step.run('remove-from-warmer', async () => { ... })
-      // - Delete the warmer item (each row = one item)
-      // - Return the removed item details
-      
+      await step.run('remove-from-warmer', async () => {
+        await db
+          .delete(foodWarmer)
+          .where(eq(foodWarmer.id, warmerId));
+      });
+
       // Step 3: Dispatch event for order fulfillment
-      // - Send 'order.item.placed' event with:
-      //   - orderId
-      //   - foodType
-      //   - quantity
-      //   - warmerId (the ID of the item removed from warmer)
-      // - This event will be handled by fulfill-order function
-      // - That function will handle tray updates and order completion
-      
+      await step.sendEvent('Send order item placed event', {
+        name: 'order.item.placed',
+        data: {
+          orderId,
+          foodType,
+          quantity,
+          warmerId,
+        },
+      });
+
       return {
-        action: 'removed',
+        action: 'removed' as const,
         warmerId,
         foodType,
         quantity,
