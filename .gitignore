@@ -42,3 +42,6 @@ next-env.d.ts
 
 # This should be up to each developers's preferences
 .claude/settings.local.json
+
+# turbo
+.turbo/
