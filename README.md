@@ -4,9 +4,9 @@
 
 Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven architecture using Inngest through a simulated fast-food kitchen order system.
 
-## 🎯 Workshop Goals
-
 ![alt text](inngest-workshop.jpeg)
+
+## 🎯 Workshop Goals
 
 - Understand event-driven architecture concepts
 - Learn to build workflows with Inngest
