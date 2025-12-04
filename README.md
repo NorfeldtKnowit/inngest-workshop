@@ -6,6 +6,8 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 
 ## 🎯 Workshop Goals
 
+![alt text](inngest-workshop.jpeg)
+
 - Understand event-driven architecture concepts
 - Learn to build workflows with Inngest
 - Implement real-world patterns like queuing, batching, and caching
