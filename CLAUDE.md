@@ -6,34 +6,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Start development (Next.js + Inngest Dev Server)
-npm run dev
+pnpm run dev
 
 # Start only Next.js
-npm run dev:next
+pnpm run dev:next
 
 # Start only Inngest Dev Server
-npm run inngest:dev
+pnpm run inngest:dev
 
 # Database commands
-npm run db:push      # Apply schema changes to SQLite
-npm run db:studio    # Open Drizzle Studio for database inspection
-npm run db:generate  # Generate migration files
+pnpm run db:push      # Apply schema changes to SQLite
+pnpm run db:studio    # Open Drizzle Studio for database inspection
+pnpm run db:generate  # Generate migration files
 
 # Code quality
-npm run lint         # Run ESLint
-npm run lint -- --fix  # Auto-fix linting issues
+pnpm run lint         # Run ESLint
+pnpm run lint -- --fix  # Auto-fix linting issues
 
 # Build and start production
-npm run build
-npm run start
+pnpm run build
+pnpm run start
 
 # Initial setup (install deps + create database)
-npm run setup
+pnpm run setup
 ```
 
 ## Development Conventions
 
-- Don't try to run 'npm run dev' unless I have instructed you to. Assume that I'm running it all the time in the background.
+- Don't try to run 'pnpm run dev' unless I have instructed you to. Assume that I'm running it all the time in the background.
 
 ## TypeScript Best Practices
 

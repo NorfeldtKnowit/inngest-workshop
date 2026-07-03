@@ -17,8 +17,8 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 
 ### Prerequisites
 
-- Node.js 18.17+ installed
-- npm or yarn package manager
+- Node.js 22+ installed
+- pnpm package manager
 - Git
 - Code editor (VS Code recommended)
 
@@ -34,13 +34,13 @@ Welcome to the FastFood Workshop! This hands-on workshop teaches event-driven ar
 2. Install dependencies and set up the database:
 
    ```bash
-   npm run setup
+   pnpm run setup
    ```
 
 3. Start the development servers:
 
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
    This starts:
@@ -204,30 +204,30 @@ fulfill-order
 
 ```bash
 # Development
-npm run setup        # Install dependencies and set up database
-npm run dev          # Start all dev servers (Next.js on :3000, Inngest on :8288, Drizzle Studio on https://local.drizzle.studio)
-npm run dev:next     # Start only Next.js development server (http://localhost:3000)
-npm run inngest:dev  # Start only Inngest Dev Server (http://localhost:8288)
+pnpm run setup        # Install dependencies and set up database
+pnpm run dev          # Start all dev servers (Next.js on :3000, Inngest on :8288, Drizzle Studio on https://local.drizzle.studio)
+pnpm run dev:next     # Start only Next.js development server (http://localhost:3000)
+pnpm run inngest:dev  # Start only Inngest Dev Server (http://localhost:8288)
 
 # Database
-npm run db:studio    # Open Drizzle Studio (https://local.drizzle.studio/)
-npm run db:push      # Apply database schema changes
-npm run db:generate  # Generate database migration files
+pnpm run db:studio    # Open Drizzle Studio (https://local.drizzle.studio/)
+pnpm run db:push      # Apply database schema changes
+pnpm run db:generate  # Generate database migration files
 
 # Testing
-npm run test         # Run Playwright tests
-npm run test:ui      # Run Playwright tests with UI
-npm run test:debug   # Run Playwright tests in debug mode
-npm run test:exercise1  # Test Exercise 1: Food Preparation
-npm run test:exercise2  # Test Exercise 2: Warmer Management
-npm run test:exercise3  # Test Exercise 3: Order Fulfillment
+pnpm run test         # Run Playwright tests
+pnpm run test:ui      # Run Playwright tests with UI
+pnpm run test:debug   # Run Playwright tests in debug mode
+pnpm run test:exercise1  # Test Exercise 1: Food Preparation
+pnpm run test:exercise2  # Test Exercise 2: Warmer Management
+pnpm run test:exercise3  # Test Exercise 3: Order Fulfillment
 
 # Code Quality
-npm run lint         # Run linter
+pnpm run lint         # Run linter
 
 # Production
-npm run build        # Build for production
-npm run start        # Start production server
+pnpm run build        # Build for production
+pnpm run start        # Start production server
 ```
 
 ### Database Management
@@ -235,7 +235,7 @@ npm run start        # Start production server
 To inspect and modify your database:
 
 ```bash
-npm run db:studio
+pnpm run db:studio
 ```
 
 This opens Drizzle Studio at <https://local.drizzle.studio> where you can:
@@ -308,7 +308,7 @@ The APIs below are primarily used by the frontend dashboard and for development/
 
 ### Development URLs
 
-When running `npm run dev`, the following services are available:
+When running `pnpm run dev`, the following services are available:
 
 | Service | URL | Purpose |
 |---------|-----|----------|
